@@ -14,9 +14,13 @@ int main(void) {//repl
 	while(running == true) {
 		
 		char input[] = "";
-		scanf("%[^\n]s", input);
-		if (true == equals(input, "q"))
+		scanf("%s", input);
+		if (true == equals(input, "q")) {
 			running = false;
+			continue;
+		} else if (equals(input, "new") == true) {
+			contact contact = fromname(input);
+		}
 		else {
 			printf("unrecognized command\n");
 		}
@@ -35,34 +39,28 @@ int equals(const char * str1, const char * str2) {
 	return true;
 }// equals
 
-contact newcontact(char * name) {
+contact newcontact(char * str) {
 	contact contact;
-	int i = 0;
-	int firstIndex = 0;
-	int size = 0;
-	while(name[i] != '\0') {
+	
+	char * data = strtok(str, ' ');
 
-		if (name[i] == '\s')
-			firstIndex = i;
-		i++;
-	}
-	i++;
+	contact.first_name = data[0];
+	contact.last_name = data[1];
+	contact.phone_number = data[2];
+	contact.email = data[3];
+	contact.address = data[4];
+	contact.website = data[5];
 
-	char firstName[firstIndex];
-	char lastName[i + 2];
-
-	for (int j = 0; j < firstIndex; j++)
-		firstName[i] = name[i];
-
-	for (int j = firstIndex; j < i; j++)
-		lastName[j - firstIndex] = name[j];
-
+	return contact;
 }
 
+contact fromname(char *  str) {
 
+	char * data = strtok(str, ' ');
+	contact contact;
 
+	contact.first_name = data[0];
+	contact.last_name = data[1];
 
-
-
-
+	return contact;
 }

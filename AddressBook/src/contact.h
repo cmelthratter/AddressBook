@@ -4,9 +4,9 @@
 
 typedef struct contact {
 	
-	char * first_name;
-	char * last_name;
-	char * phone_number;
+	char * firstName;
+	char * lastName;
+	char * phoneNumber;
 	char * email;
 	char * address;
 

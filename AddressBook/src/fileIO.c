@@ -1,11 +1,13 @@
 #include <stdio.h>
 #include "contact.h"
 
-int writef(contact c) {
+int write_file(contact c) {
 
 //TODO write contact info to file.
 }
 
-int readfile(char * filepath) {
+int read_file(FILE * fp, contact * c) {
 	//TODO: read contact info from file
+
+	
 }

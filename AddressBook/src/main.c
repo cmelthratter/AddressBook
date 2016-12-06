@@ -3,23 +3,36 @@
 
 #define true 1
 #define false 0
+#define MAX_CONTACTS 100
+#define FILE_NAME "contacts.dat"
 
 typedef int bool;
 
 int equals(const char* str1, const char *str);
-contact newcontact(char * name);
+
+contact newContact(char * name);
+contact fromName(char * name);
 
 int main(void) {//repl
+	FILE * fp;
+	fp = fopen(FILE_NAME, "bw+");
+	for ( int i = 0; i < MAX_CONTACTS; i++ ) {
+
+	}
 	bool running = true;
 	while(running == true) {
 		
 		char input[] = "";
 		scanf("%s", input);
 		if (true == equals(input, "q")) {
-			running = false;
-			continue;
+			printf("bye.\n");
+			return;
 		} else if (equals(input, "new") == true) {
-			contact contact = fromname(input);
+			contact contact = from_name(input);
+			printf("new contact ");
+			printcon(contact);
+		} else if (equals(input, "find") == true) {
+
 		}
 		else {
 			printf("unrecognized command\n");
@@ -39,28 +52,27 @@ int equals(const char * str1, const char * str2) {
 	return true;
 }// equals
 
-contact newcontact(char * str) {
-	contact contact;
+contact newContact(char * str) {
+	
 	
 	char * data = strtok(str, ' ');
 
-	contact.first_name = data[0];
-	contact.last_name = data[1];
-	contact.phone_number = data[2];
-	contact.email = data[3];
-	contact.address = data[4];
-	contact.website = data[5];
+	contact contact = {data[0], data[1], data[2], data[3], data[4]};
 
 	return contact;
 }
 
-contact fromname(char *  str) {
+contact fromName(char *  str) {
 
 	char * data = strtok(str, ' ');
-	contact contact;
-
-	contact.first_name = data[0];
-	contact.last_name = data[1];
+	contact contact = {data[0], data[1], "", "", ""};
 
 	return contact;
+}
+
+contact find(char * lastName) {
+
+	for (int i = 0; i < 100; i++) {
+
+	}
 }

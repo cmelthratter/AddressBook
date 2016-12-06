@@ -9,7 +9,6 @@ typedef struct contact {
 	char * phone_number;
 	char * email;
 	char * address;
-	char * website;
 
 } contact; // contact
 

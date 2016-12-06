@@ -14,10 +14,12 @@ contact newContact(char * name);
 contact fromName(char * name);
 
 int main(void) {//repl
+	contact c = {"", "", "", "", ""};
 	FILE * fp;
-	fp = fopen(FILE_NAME, "bw+");
+	if (fp = fopen(FILE_NAME, "rb+") == NULL)
+		fp = fopen(FILE_NAME, "wb+");
 	for ( int i = 0; i < MAX_CONTACTS; i++ ) {
-
+		f
 	}
 	bool running = true;
 	while(running == true) {

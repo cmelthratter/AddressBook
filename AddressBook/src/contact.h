@@ -2,7 +2,7 @@
 #define CONTACT_H_
 
 
-typedef struct contact {
+typedef struct contactData {
 	
 	char * firstName;
 	char * lastName;

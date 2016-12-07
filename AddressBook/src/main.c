@@ -14,9 +14,10 @@ contact * find(char * first, char * last, FILE * fp);
 
 int main(void) { //repl
 
-	contact emptyC = { "", "", "", "" };
 	FILE * fp;
 	printf("opening %s ...\n", FILE_NAME);
+
+	
 
 	if ((fp = fopen(FILE_NAME, "rb+")) == NULL) { // check if contacts file is already there
 		printf("%s does not exist, creating file ...", FILE_NAME);
@@ -25,8 +26,6 @@ int main(void) { //repl
 
 	printf("Successful\n");
 
-	
-	contact currentContact = emptyC;
 	while (true) {
 
 		char * input = (char*) malloc(sizeof(char) * 10);
@@ -43,13 +42,14 @@ int main(void) { //repl
 			char firstName[50];
 			printf("input a first and last name to search for: \n");
 			scanf("%s %s", lastName, firstName);
+			getchar();
 			printf("stored name\n");
-			contact * c;
+			struct contactData * c = {"", "", "", ""};
 			if (c = find(firstName, lastName, fp) == NULL) printf("Contact not found\n");
 			else {
 				printcon(*c);
 			}
-		} else if (strcmp(input, "change") == 0) {
+		} else if (strcmp(input, "update") == 0) {
 
 			updateRecord(fp);
 
@@ -70,31 +70,34 @@ void newContact(FILE * fp) {
 	char newPhone[20];
 	char newEmail[20];
 	scanf("%s %s %s %s", newFirst, newLast, newPhone, newEmail);
+	getchar();
 
-	printf("stored info\n");
-
-	contact * con = (contact*) sizeof(contact);
-	con->firstName = newFirst;
-	con->lastName = newLast;
-	con->phone = newPhone;
-	con->email = newEmail;
+	struct contactData con = {"", "", "", ""};
+	con.firstName = newFirst;
+	con.lastName = newLast;
+	con.phone = newPhone;
+	con.email = newEmail;
 	printf("new contact ");
-	printcon(*con);
-	printf("saving contact to file ...");
+	printcon(con);
+	printf("saving contact to file ...\n");
 	fseek(fp, sizeof(contact), SEEK_END);
-	fwrite(con, sizeof(contact), 1, fp);
+	fwrite(&con, sizeof(contact), 1, fp);
 	printf("Done.\n");
 
 }
 
 
 void updateRecord(FILE * fp) {
-	printf("who would you like to update?");
-	char first[20];
-	char last[20];
-	scanf("%s %s",last, first );
-	int * position = 0;
-	contact * current = find(first, last, fp);
+	printf("who would you like to update? ");
+	char updateFirst[20];
+	char updateLast[20];
+
+	
+	scanf(" %s %s", updateFirst, updateLast);
+	printf("%s, %s", updateFirst, updateLast);
+
+	struct contactData * current = {"", "", "", ""};
+	current = find(updateFirst, updateLast, fp);
 	printf("What would like to update? (1 - first name, 2 - last name, 3 - phone number, 4 - email\n");
 	unsigned int * choice;
 	scanf("%u", choice);

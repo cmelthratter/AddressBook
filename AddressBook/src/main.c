@@ -10,7 +10,7 @@ typedef int bool;
 
 void newContact(FILE * fp);
 void updateRecord(FILE *fp);
-contact * find(char * first, char * last, FILE * fp);
+int find(char * first, char * last, FILE * fp, struct contactData *rPtr);
 
 int main(void) { //repl
 
@@ -45,7 +45,7 @@ int main(void) { //repl
 			getchar();
 			printf("stored name\n");
 			struct contactData * c = {"", "", "", ""};
-			if (c = find(firstName, lastName, fp) == NULL) printf("Contact not found\n");
+			if (find(firstName, lastName, fp, c) == NULL) printf("Contact not found\n");
 			else {
 				printcon(*c);
 			}
@@ -61,7 +61,6 @@ int main(void) { //repl
 } // main
 
 void newContact(FILE * fp) {
-	printf("allocating memory ...\n");
 	printf(
 			"enter contact information [LAST NAME] [FIRST NAME] [9 DIGIT PHONE NUMBER] [EMAIL]:\n");
 
@@ -70,7 +69,7 @@ void newContact(FILE * fp) {
 	char newPhone[20];
 	char newEmail[20];
 	scanf("%s %s %s %s", newFirst, newLast, newPhone, newEmail);
-	getchar();
+	
 
 	struct contactData con = {"", "", "", ""};
 	con.firstName = newFirst;
@@ -83,22 +82,28 @@ void newContact(FILE * fp) {
 	fseek(fp, sizeof(contact), SEEK_END);
 	fwrite(&con, sizeof(contact), 1, fp);
 	printf("Done.\n");
-
+	rewind(fp);
 }
 
 
 void updateRecord(FILE * fp) {
-	printf("who would you like to update? ");
-	char updateFirst[20];
-	char updateLast[20];
+	printf("who would you like to update?\n");
+
+	char updateFirst[100];
+	char updateLastName[100];
 
 	
-	scanf(" %s %s", updateFirst, updateLast);
-	printf("%s, %s", updateFirst, updateLast);
-
-	struct contactData * current = {"", "", "", ""};
-	current = find(updateFirst, updateLast, fp);
-	printf("What would like to update? (1 - first name, 2 - last name, 3 - phone number, 4 - email\n");
+	scanf(" %s %s", updateFirst, updateLastName);
+	printf("%s, %s\n", updateFirst, updateLastName);
+	//getchar();
+	struct contactData newContact = {"", "", "", ""};
+	printf("created new empty contact\n");
+	struct contactData *current;
+	current = &newContact;
+	printf("assigned struct pointrer to constact address\n");
+	if (find(updateFirst, updateLastName, fp, current) == 0) return;
+	printcon(*current);
+	printf("What would like to update? (1 - first name, 2 - last name, 3 - phone number, 4 - email)\n");
 	unsigned int * choice;
 	scanf("%u", choice);
 
@@ -132,22 +137,31 @@ void updateRecord(FILE * fp) {
 	}
 
 	fwrite(current, sizeof(contact), 1, fp);
+	rewind(fp);
 }
 
-contact * find(char * first, char* last, FILE * fp) {
-	contact current;
+int find(char *first, char *last, FILE *fp, struct contactData *rPtr) {
+	struct contactData currentContact = {"", "", "", ""};
+	printf("created empty contact\n");
+
+	printf("assigned pointer struct to emtpy struct address\n");
 	for (int i = 0; i < 100; i++) {
-		int result = fread(&current, sizeof(contact), 1, fp);
-		if (strcmp(current.lastName, last) == 0) {
-			if (strcmp(current.firstName, first) == 0) {
-				return &current;
-			}
-		} else
-			fseek(fp, sizeof(contact), SEEK_SET);
+		printf("reading from file\n");
+		fread(&currentContact, sizeof(struct contactData), 1, fp);
+		printcon(currentContact);
+		if (strcmp(currentContact.lastName, last) == 0 && strcmp(currentContact.firstName, first) == 0) {
+			
+			printf("found contact, returning address\n");
+			rPtr = &currentContact;
+			return 10;
+			printf("moving on ... \n");
+		}
+		fseek(fp, (sizeof(contact) * i) - 1, SEEK_SET);
 	}
 
 	printf("contact not found.\n");
-	return NULL;
+	rewind(fp);
+	return 0;
 }
 
 void deleteRecord(FILE * fp) {
@@ -158,8 +172,8 @@ void deleteRecord(FILE * fp) {
 	scanf("%s %s", first, last);
 	int * poisition;
 
-	contact * toDelete;
-	toDelete = find(first, last, fp);
+	struct contactData * toDelete;
+	if (find(first, last, fp, toDelete) == 0) return;
 	toDelete->firstName = "";
 	toDelete->lastName = "";
 	toDelete->phone = "";

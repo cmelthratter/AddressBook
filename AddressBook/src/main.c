@@ -4,37 +4,28 @@
 
 #define true 1
 #define false 0
-#define MAX_CONTACTS 100
 #define FILE_NAME "contacts.dat"
-#ifndef NULL
-#define NULL ((void *) 0)
-#endif
 
 typedef int bool;
 
 void newContact(FILE * fp);
 void updateRecord(FILE *fp);
-contact * fromName(char * last, char * first);
-contact * find(char * name, FILE * fp);
+contact * find(char * first, char * last, FILE * fp);
 
 int main(void) { //repl
 
 	contact emptyC = { "", "", "", "" };
 	FILE * fp;
-	bool newFile = false; //boolean to check if we created a new file
 	printf("opening %s ...\n", FILE_NAME);
 
 	if ((fp = fopen(FILE_NAME, "rb+")) == NULL) { // check if contacts file is already there
 		printf("%s does not exist, creating file ...", FILE_NAME);
-		newFile = true;
 		fp = fopen(FILE_NAME, "wb+");
 	} // end if
 
 	printf("Successful\n");
 
-	if (newFile == true) //if new file was created, write 100 empty contact records.
-		for (int i = 0; i < MAX_CONTACTS; i++)
-			fwrite(&emptyC, sizeof(contact), 1, fp);
+	
 	contact currentContact = emptyC;
 	while (true) {
 
@@ -49,10 +40,18 @@ int main(void) { //repl
 			newContact(fp);
 		} else if (strcmp(input, "find") == 0) {
 			char lastName[50];
-			printf("input a last name to search for: \n");
-			scanf("%s", lastName);
+			char firstName[50];
+			printf("input a first and last name to search for: \n");
+			scanf("%s %s", lastName, firstName);
 			printf("stored name\n");
-			contact * c = find(lastName, fp);
+			contact * c;
+			if (c = find(firstName, lastName, fp) == NULL) printf("Contact not found\n");
+			else {
+				printcon(*c);
+			}
+		} else if (strcmp(input, "change") == 0) {
+
+			updateRecord(fp);
 
 		} else {
 			printf("unrecognized command\n");
@@ -68,47 +67,68 @@ void newContact(FILE * fp) {
 
 	char newLast[20]; //allocating memory for the attributes of the new contact
 	char newFirst[20];
-	char phone[20];
-	char email[20];
-	scanf("%s", newLast);
+	char newPhone[20];
+	char newEmail[20];
+	scanf("%s %s %s %s", newFirst, newLast, newPhone, newEmail);
 
-	printf("stored name\n");
+	printf("stored info\n");
 
-	contact * con;
-	con = {newFirst, newLast, phone, email};
+	contact * con = (contact*) sizeof(contact);
+	con->firstName = newFirst;
+	con->lastName = newLast;
+	con->phone = newPhone;
+	con->email = newEmail;
 	printf("new contact ");
 	printcon(*con);
-
+	printf("saving contact to file ...");
 	fseek(fp, sizeof(contact), SEEK_END);
 	fwrite(con, sizeof(contact), 1, fp);
+	printf("Done.\n");
 
 }
 
-contact * fromName(char * last, char * first) {
-
-	printf("%s, %s", last, first);
-	contact * c = { last, first, "", "", "" };
-
-	return c;
-}
 
 void updateRecord(FILE * fp) {
 	printf("who would you like to update?");
 	char first[20];
 	char last[20];
 	scanf("%s %s",last, first );
+	int * position = 0;
 	contact * current = find(first, last, fp);
 	printf("What would like to update? (1 - first name, 2 - last name, 3 - phone number, 4 - email\n");
 	unsigned int * choice;
 	scanf("%u", choice);
 
-	switch(choice) {
+	switch(*choice) {
 		case 1:
 			printf("Enter first name");
-			char newName[20];
-			scanf("%s", newName);
-			current->firstName = newName;
+			char newFirst[20];
+			scanf("%s", newFirst);
+			current->firstName = newFirst;
+			break;
+		case 2:
+			printf("Enter last name");
+			char newLast[20];
+			scanf("%s", newLast);
+			current->lastName = newLast;
+			break;
+		case 3:
+			printf("Enter a new phone number");
+			char phoneNumber[20];
+			scanf("%s", phoneNumber);
+			current->phone = phoneNumber;
+			break;
+		case 4:
+			printf("Enter a new email\n");
+			char newEmail[20];
+			scanf("%s", newEmail);
+			current->email = newEmail;
+			break;
+		default:
+		break;
 	}
+
+	fwrite(current, sizeof(contact), 1, fp);
 }
 
 contact * find(char * first, char* last, FILE * fp) {
@@ -116,14 +136,31 @@ contact * find(char * first, char* last, FILE * fp) {
 	for (int i = 0; i < 100; i++) {
 		int result = fread(&current, sizeof(contact), 1, fp);
 		if (strcmp(current.lastName, last) == 0) {
-			if (strcmp(current.firstName, first) == 0)
+			if (strcmp(current.firstName, first) == 0) {
 				return &current;
+			}
 		} else
 			fseek(fp, sizeof(contact), SEEK_SET);
 	}
 
 	printf("contact not found.\n");
 	return NULL;
+}
+
+void deleteRecord(FILE * fp) {
+
+	printf("Enter the name of the contact to delete [LAST FIRST]");
+	char first[20];
+	char last[20];
+	scanf("%s %s", first, last);
+	int * poisition;
+
+	contact * toDelete;
+	toDelete = find(first, last, fp);
+	toDelete->firstName = "";
+	toDelete->lastName = "";
+	toDelete->phone = "";
+	toDelete->email = "";
 }
 
 //int saveContact(contact * c, FILE * fp)

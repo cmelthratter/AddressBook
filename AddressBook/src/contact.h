@@ -6,7 +6,7 @@ typedef struct contact {
 	
 	char * firstName;
 	char * lastName;
-	char * phoneNumber;
+	char * phone;
 	char * email;
 
 } contact; // contact

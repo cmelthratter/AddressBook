@@ -8,7 +8,6 @@ typedef struct contact {
 	char * lastName;
 	char * phoneNumber;
 	char * email;
-	char * address;
 
 } contact; // contact
 

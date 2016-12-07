@@ -1,95 +1,98 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include "contact.h"
 
 #define true 1
 #define false 0
 #define MAX_CONTACTS 100
 #define FILE_NAME "contacts.dat"
-#define EMPTY_CONTACT {"", "", "", "", ""};
 
 typedef int bool;
 
-contact * newContact(char * str);
-contact * fromName(char * str);
+void  newContact(FILE * fp);
+contact * fromName(char * last, char * first);
 contact * find(char * name, FILE * fp);
 
 int main(void) {//repl
-	contact emptyC = EMPTY_CONTACT;
-	FILE * fp;
-	bool newFile = false;
+
+	contact emptyC = {"", "", "", ""};
+	FILE * fp; 
+	bool newFile = false;//boolean to check if we created a new file
 	printf("opening %s ...\n", FILE_NAME);
-	if ( ( fp = fopen(FILE_NAME, "rb+") ) == NULL) {
-		printf("%s does not exists, creating file ...", FILE_NAME);
+
+	if ( ( fp = fopen(FILE_NAME, "rb+") ) == NULL) {// check if contacts file is already there
+		printf("%s does not exist, creating file ...", FILE_NAME);
 		newFile = true;
 		fp = fopen(FILE_NAME, "wb+");
-	}
+	}// end if 
+
 	printf("Successful\n");
-	if (newFile == true)
+
+
+	if (newFile == true)//if new file was created, write 100 empty contact records.
 		for (int i = 0; i < MAX_CONTACTS; i++) 
 			fwrite(&emptyC, sizeof(contact), 1, fp);
-	bool running = true;
-	while(running == true) {
+	contact currentContact = emptyC;
+	while(true) {
 		
-		char input[] = "";
+		char  * input = (char*) malloc(sizeof(char) * 10);
+
 		scanf("%s", input);
+		getchar();
 		if (0 == strcmp(input, "q")) {
 			printf("bye.\n");
-			return;
+			return 0;
 		} else if (strcmp(input, "new") == 0) {
-			char * new;
-			printf("enter a name for your contact: ");
-			scanf("%s", new);
-			contact * c = fromName(new);
-			printf("new contact ");
-			printcon(*c);
-			//saveContact(c, fp);
+			newContact(fp);
 		} else if (strcmp(input, "find") == 0) {
-			char * lastName;
+			char lastName[50];
 			printf("input a last name to search for: \n");
 			scanf("%s", lastName);
+			printf("stored name\n");
 			contact * c = find(lastName, fp);
 
-		}
-		else {
+		} else {
 			printf("unrecognized command\n");
 		}
 	}
 	return 0;
 }// main
 
-contact * newContact(char * str) {
+void newContact(FILE * fp) {
+	printf("allocating memory ...\n");
+	printf("enter contact information [LAST NAME] [FIRST NAME] [9 DIGIT PHONE NUMBER] [EMAIL]:\n");
+	char * sentence = (char*) malloc(sizeof(char) * 100);
+	char * newLast[20];
+	char newFirst[20];
+	char phone[20];
+	char email[20];
+	scanf("%s", sentence, );
 	
-	
-	char * data = strtok(str, " ");
-	
+	printf("stored name\n");
 
-	contact * c = {data[0], data[1], data[2], data[3], data[4]};
+	contact * con;
+	con = fromName(newLast, newFirst);
+	printf("new contact ");
+	printcon(*con);
 
-
-	return c;
 }
 
-contact * fromName(char *  str) {
+contact * fromName(char * last, char * first) {
 
-	char * lastName = strtok(str, " ");
-	char * firstName = strtok(NULL, " ");
-	printf("%s, %s", lastName, firstName);
-	contact * c = {lastName, firstName, "", "", ""};
+	printf("%s, %s", last, first);
+	contact * c = {*last, *first, "", "", ""};
 
 	return c;
 }
 
 contact * find(char * name, FILE * fp) {
-	fseek(fp, 0, SEEK_SET);
-	char * data = strtok(name, ' ');
-	contact c;
-	int result;
+	
 	for (int i = 0; i < 100; i++) {
-		result = fread(&c, sizeof(contact), 1, fp);
-		if (strcmp(c.lastName, data[1]) == 0)
-			if (strcmp(c.firstName, data[0]) == 0) return &c;
+		//result = fread(&c, sizeof(contact), 1, fp);
+		//f (strcmp(c.lastName, data[1]) == 0)
+			//if (strcmp(c.firstName, data[0]) == 0) return &c;
 
-		else fseek(fp, sizeof(contact), SEEK_SET);
+		//else fseek(fp, sizeof(contact), SEEK_SET);
 	}
 	printf("contact not found.\n");
 	return NULL;
